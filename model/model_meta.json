@@ -1,0 +1,1 @@
+{"inputUnits":[3],"outputUnits":1,"inputs":{"memory":{"dtype":"number","min":0,"max":128},"price":{"dtype":"number","min":614,"max":4361},"battery":{"dtype":"number","min":800,"max":9500}},"outputs":{"storage":{"dtype":"number","min":0,"max":6}},"isNormalized":true}
