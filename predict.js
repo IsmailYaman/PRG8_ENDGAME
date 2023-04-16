@@ -1,69 +1,24 @@
-const nn = ml5.neuralNetwork({ task: 'regression', debug: true })
+document.addEventListener("DOMContentLoaded", function() {
+    const nn = ml5.neuralNetwork({ task: 'regression', debug: false })
 
-let minMemory = 4000
-let maxMemory = 0
-let minPrice = 4000
-let maxPrice = 0
-let minBattery = 4000
-let maxBattery= 0
+    const calories = document.getElementById('calories')
+    const fat = document.getElementById('fat')
+    const carb = document.getElementById('carb')
 
-let fieldMemory = document.getElementById('fieldMemory')
-let fieldPrice = document.getElementById('fieldPrice')
-let fieldBattery = document.getElementById('fieldBattery')
-
-nn.load('./model/model.json', modelLoaded)
-
-function modelLoaded () {
-    Papa.parse("../training-side/data/mobilephones.csv", {
-        download:true,
-        header:true, 
-        dynamicTyping:true,
-        complete: results => processData(results.data)
-    })
-}
-function processData(data) {
-    for (let phone of data) {
-        if (phone.memory < minMemory && phone.memory !== 0) {
-            minMemory = phone.memory
-        }
-        if (phone.memory > maxMemory) {
-            maxMemory = phone.memory
-        }
-
-        if (phone.price < minPrice && phone.price !== 0) {
-            minPrice = phone.price
-        }
-        if (phone.price > maxPrice) {
-            maxPrice = phone.price
-        }
-
-        if (phone.battery < minBattery && phone.battery !== 0) {
-            minBattery = phone.battery
-        }
-        if (phone.battery > maxBattery) {
-            maxBattery = phone.battery
+    nn.load('./model/model.json', console.log("model Loaded"))
+    // console.log(calories.value);
+    async function makePrediction() {
+        let cal = parseInt(calories.value)
+        let f = parseInt(fat.value)
+        let ca = parseInt(carb.value)
+        
+        if(cal >= 0 && f >= 0 && ca >= 0 ) {
+            const results = await nn.predict({ calories: cal, fat: f, carb: ca })
+            document.getElementById('result').innerHTML = `De geschatte proteine: ${parseFloat(results[0].protein)}`
+        } else {
+            document.getElementById('result').innerHTML = `Vul alle velden in`
         }
     }
 
-    fieldMemory.min = minMemory
-    fieldMemory.max = maxMemory
-
-    fieldPrice.min = minPrice
-    fieldPrice.max = maxPrice
-
-    fieldBattery.min = minBattery
-    fieldBattery.max = maxBattery
-}
-
-async function makePrediction() {
-    let valuePrice = parseInt(fieldPrice.value)
-    let valueMemory = parseInt(fieldMemory.value)
-    let valueBattery = parseInt(fieldBattery.value)
-
-    const results = await nn.predict({ memory: valueMemory, price: valuePrice, battery: valueBattery })
-
-    document.getElementById('result').innerHTML = `Geschatte opslag: ${results[0].storage}`
-}
-
-document.getElementById('predictionButton').addEventListener('click', makePrediction)
-
+    document.getElementById('btn').addEventListener('click', makePrediction)
+})

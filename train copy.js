@@ -4,11 +4,8 @@ const nn = ml5.neuralNetwork({ task: "regression", debug: true });
 
 const field = document.getElementById("field");
 
-let min = 0;
-let max = 0;
-
 function loadData() {
-    Papa.parse("./data/fastfood.csv", {
+    Papa.parse("../data/Iris.csv", {
         download: true,
         header: true,
         dynamicTyping: true,
@@ -23,65 +20,58 @@ function checkData(data) {
     let trainData = data.slice(0, Math.floor(data.length * 0.8));
     // let testData = data.slice(Math.floor(data.length * 0.8) + 1)
 
-for (let food of trainData) {
-    console.log(food);
-    nn.addData(
-        {
-            calories: food.calories,
-            fat: food.total_fat,
-            carb: food.total_carb,
-        },
-        { protein: food.protein }
-    );
-    if (food.protein > max) {
-        max = food.protein;
+    for (let iris of trainData) {
+        nn.addData(
+            {
+                petalLength: iris.PetalLengthCm,
+                sepalLength: iris.SepalLengthCm,
+                sepalWidth: iris.SepalWidthCm,
+            },
+            { petalWidth: iris.PetalWidthCm }
+        );
     }
-    if (food.protein < min) {
-        min = food.protein;
-    }
-}
-
-    console.log(nn.addData);
     //normalize Data and start training
     nn.normalizeData();
     nn.train({ epochs: 10 }, () => finishedTraining());
 
     //draw scatterplot
-    const chartdata = data.map((food) => ({
-        x: food.calories,
-        y: food.protein,
+    const chartdata = data.map((iris) => ({
+        x: iris.PetalLengthCm,
+        y: iris.PetalWidthCm,
     }));
     console.log(chartdata);
-    createChart(chartdata, "Calories", "Protein");
+    createChart(chartdata, "Petal Length in CM", "Petal Width in CM");
 }
 
 async function finishedTraining() {
     let predictions = [];
 
-    for (let calories = 0; calories < 2400; calories += 50) {
+    for (let length = 1; length < 9; length += 0.2) {
         const pred = await nn.predict({
-            calories: calories,
-            fat: 40,
-            carb: 40,
+            petalLength: length,
+            sepalLength: 5,
+            sepalWidth: 3,
         });
         console.log(pred);
-        predictions.push({ x: calories, y: pred[0].protein });
+        predictions.push({ x: length, y: pred[0].petalWidth });
     }
+
+    console.log("updated");
     updateChart("Predictions", predictions);
 }
 
 async function makePrediction() {
     let valueInt = parseInt(field.value);
     const results = await nn.predict({
-        calories: valueInt,
-        fat: 40,
-        carb: 40,
+        petalLength: valueInt,
+        sepalLength: 5,
+        sepalWidth: 3,
     });
-    console.log(`geschatte proteine: ${results[0].protein}`);
+    console.log(`Geschatte CM Width: ${results[0].petalWidth}`);
     document.getElementById(
         "result"
-    ).innerHTML = `De geschatte proteine: ${parseFloat(
-        results[0].protein
+    ).innerHTML = `De geschatten cm's op twee decimalen: ${parseFloat(
+        results[0].petalWidth
     ).toFixed(2)}`;
 }
 
