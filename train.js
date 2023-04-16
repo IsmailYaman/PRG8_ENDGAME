@@ -43,7 +43,7 @@ for (let food of trainData) {
 
     console.log(nn.addData);
     //normalize Data and start training
-    nn.normalizeData();
+    // nn.normalizeData();
     nn.train({ epochs: 10 }, () => finishedTraining());
 
     //draw scatterplot

@@ -9,25 +9,29 @@
     <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <script defer src="./predict.js" type="module"></script>
+    <script defer src="./train.js" type="module"></script>
+
+    
     <title>Eindopdracht</title>
 </head>
-<body class="bg-yellow-50">
-    <h1 class="text-4xl font-bold text-center py-8 text-orange-700">Prediction</h1>
+<body class="bg-orange-100">
+    <h1 class="text-4xl font-bold text-center py-8 text-orange-700">Training</h1>
     <div class="text-center mb-4">
-        <a href="../index.html" class="px-4 py-2 font-bold bg-red-500 rounded-md hover:bg-red-700 text-white">Home</a>
-        <a href="../train.html" class="px-4 py-2 font-bold bg-green-500 rounded-md hover:bg-green-700 text-white">Train</a>
+        <a href="./index.html" class="px-4 py-2 font-bold text-white bg-red-600 rounded-md hover:bg-red-700">Home</a>
+        <a href="./predict.html" class="px-4 py-2 font-bold text-white bg-yellow-500 rounded-md hover:bg-yellow-600">Prediction</a>
     </div>
 
-    <div class="flex flex-col items-center justify-center">
-        <input type="text" id="calories" placeholder="Calorieen" class="px-4 py-2 my-2 text-lg text-gray-800 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"/>
-        <input type="text" id="fat" placeholder="Vet" class="px-4 py-2 my-2 text-lg text-gray-800 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"/>
-        <input type="text" id="carb" placeholder="Proteine" class="px-4 py-2 my-2 text-lg text-gray-800 border border-yellow-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"/>
+    <div class="flex-grow flex flex-col justify-center items-center">
+        <h2 class="text-2xl font-bold mb-8">Petal Checker training model</h2>
+        <canvas id="myChart" width="300" height="200" class="mb-8"></canvas>
 
-        <button id="btn" class="px-4 py-2 my-2 text-lg text-white bg-orange-500 rounded-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">Voorspel!</button>
-
+        <div class="flex justify-center items-center">
+            <input type="number" id="field" placeholder="Petal Length in CM" class="border border-orange-500 rounded-l-lg py-2 px-4 text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent" />
+            <button id="btn" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-r-lg ml-2 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent">Predict!</button>
+            <button id="save" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg ml-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">Save Model</button>
+        </div>
+        
         <div id="result" class="mt-4 text-xl font-medium text-center"></div> 
-        <div id="resultLabel" class="mt-4 text-xl font-medium text-center"></div>
     </div>
 </body>
 </html>
