@@ -26,22 +26,16 @@ function checkData(data) {
         nn.addData(
             {
                 calories: food.calories,
-                fat: food.total_fat,
-                carb: food.total_carb,
             },
-            { protein: food.protein }
+            {
+                protein: food.protein,
+            }
         );
-        if (food.protein < min) {
-            min = food.protein;
-        }
-        if (food.protein > max) {
-            max = food.protein;
-        }
     }
-    console.log(trainData);
+    // console.log(trainData);
 
     //normalize Data and start training
-    // nn.normalizeData();
+    nn.normalizeData();
     nn.train({ epochs: 20 }, () => finishedTraining());
 
     //draw scatterplot
@@ -56,11 +50,9 @@ function checkData(data) {
 async function finishedTraining() {
     let predictions = [];
     // console.log(predictions);
-    for (let calories = 0; calories < 2400; calories += 1) {
+    for (let calories = 200; calories < 2430; calories += 20) {
         const pred = await nn.predict({
             calories: calories,
-            fat: 40,
-            carb: 40,
         });
         // console.log(pred);
         predictions.push({ x: calories, y: pred[0].protein });
@@ -72,8 +64,6 @@ async function makePrediction() {
     let valueInt = parseInt(field.value);
     const results = await nn.predict({
         calories: valueInt,
-        fat: 40,
-        carb: 40,
     });
     console.log(`geschatte proteine: ${results[0].protein}`);
     document.getElementById(
