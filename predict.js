@@ -1,25 +1,23 @@
 document.addEventListener("DOMContentLoaded", function() {
-    const nn = ml5.neuralNetwork({ task: 'regression', debug: false })
+    const nn = ml5.neuralNetwork({ task: 'regression', debug: false });
 
-    const calories = document.getElementById('calories')
-    // const fat = document.getElementById('fat')
-    // const carb = document.getElementById('carb')
+    const calories = document.getElementById('calories');
+    const fat = document.getElementById('fat');
 
-    nn.load('./model/model.json', console.log("model Loaded"))
-    // console.log(calories.value);
+    nn.load('./model/model.json', console.log("Model loaded"));
+
     async function makePrediction() {
-        let cal = parseInt(calories.value)
-        // let f = parseInt(fat.value)
-        // let ca = parseInt(carb.value)
+        let cal = parseInt(calories.value);
+        let f = parseInt(fat.value);
         
-        if(cal >= 0 ) {
-            const results = await nn.predict({ calories: cal })
+        if (cal >= 0 && f >= 0) {
+            const results = await nn.predict({ calories: cal, fat: f });
             console.log(results);
-            document.getElementById('result').innerHTML = `De geschatte proteine: ${parseFloat(results[0].protein).toFixed(0)} gram.`
+            document.getElementById('result').innerHTML = `The estimated protein: ${parseFloat(results[0].protein).toFixed(0)} grams.`;
         } else {
-            document.getElementById('result').innerHTML = `Vul een geldig getal in.`
+            document.getElementById('result').innerHTML = `Please enter valid numbers.`;
         }
     }
 
-    document.getElementById('btn').addEventListener('click', makePrediction)
-})
+    document.getElementById('btn').addEventListener('click', makePrediction);
+});
