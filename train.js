@@ -14,8 +14,13 @@ function loadData() {
 }
 function createNeuralNetwork(data) {
     data.sort(() => Math.random() - 0.5);
-    let trainData = data.slice(0, Math.floor(data.length * 0.8));
-    let testData = data.slice(Math.floor(data.length * 0.8) + 1);
+    let trainData = data
+        .filter((value) => value !== "") // Filter out empty values
+        .slice(0, Math.floor(data.length * 0.8));
+
+    let testData = data
+        .filter((value) => value !== "") // Filter out empty values
+        .slice(Math.floor(data.length * 0.8) + 1);
 
     console.table(testData);
 
@@ -65,8 +70,6 @@ function startTraining(trainData, testData) {
 
 async function finishedTraining(trainData = false, testData) {
     let predictions = [];
-
-
 
     for (let calories = 200; calories < 2430; calories += 20) {
         const testFood = {
