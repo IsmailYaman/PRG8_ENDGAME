@@ -1,83 +1,91 @@
 import { createChart, updateChart } from "../libraries/scatterplot.js";
 
-const nn = ml5.neuralNetwork({ task: "regression", debug: true });
+let nn;
 
 const field = document.getElementById("field");
-
-let min = 0;
-let max = 0;
 
 function loadData() {
     Papa.parse("./data/fastfood.csv", {
         download: true,
         header: true,
         dynamicTyping: true,
-        complete: (results) => checkData(results.data),
+        complete: (results) => createNeuralNetwork(results.data),
     });
 }
-
-function checkData(data) {
-    // console.table(data);
+function createNeuralNetwork(data) {
     data.sort(() => Math.random() - 0.5);
-
     let trainData = data.slice(0, Math.floor(data.length * 0.8));
-    // let testData = data.slice(Math.floor(data.length * 0.8) + 1);
+    let testData = data.slice(Math.floor(data.length * 0.8) + 1);
+
+    console.table(testData);
+
+    const options = {
+        task: "regression",
+        debug: true,
+    };
+
+    nn = ml5.neuralNetwork(options);
+
+    // Adding data to the Neural Network
     for (let food of trainData) {
-        nn.addData(
-            {
-                calories: food.calories,
-            },
-            {
-                protein: food.protein,
-            }
-        );
+        let inputs = {
+            input_calories: food.calories,
+            input_fat: food.cal_fat,
+            input_carb: food.total_carb,
+        };
+
+        nn.addData(inputs, { output: food.protein });
     }
-    // console.log(trainData);
 
-    //normalize Data and start training
+    // Normalize: Prevents that some columns have higher precedence than others
     nn.normalizeData();
-    nn.train({ epochs: 20 }, () => finishedTraining());
 
-    //draw scatterplot
-    const chartdata = data.map((food) => ({
+    //Pass data to next function
+    checkData(trainData, testData);
+}
+function checkData(trainData, testData) {
+    console.table(testData);
+
+    // Prepare the data for the scatterplot
+    const chartdata = trainData.map((food) => ({
         x: food.calories,
         y: food.protein,
     }));
-    console.log(chartdata);
+
+    // Create a scatterplot
     createChart(chartdata, "Calories", "Protein");
+
+    // Pass data to next function
+    startTraining(trainData, testData);
 }
 
-async function finishedTraining() {
+function startTraining(trainData, testData) {
+    nn.train({ epochs: 25 }, () => finishedTraining(trainData, testData));
+}
+
+async function finishedTraining(trainData = false, testData) {
     let predictions = [];
-    // console.log(predictions);
-    for (let calories = 200; calories < 2430; calories += 20) {
-        const pred = await nn.predict({
-            calories: calories,
-        });
-        // console.log(pred);
-        predictions.push({ x: calories, y: pred[0].protein });
-    }
-    updateChart("Predictions", predictions);
-}
 
-async function makePrediction() {
-    let valueInt = parseInt(field.value);
-    const results = await nn.predict({
-        calories: valueInt,
-    });
-    console.log(`geschatte proteine: ${results[0].protein}`);
-    document.getElementById(
-        "result"
-    ).innerHTML = `De geschatte proteine: ${parseFloat(
-        results[0].protein
-    ).toFixed(2)}`;
+
+
+    for (let calories = 200; calories < 2430; calories += 20) {
+        const testFood = {
+            input_calories: testData[0].calories,
+            input_fat: testData[0].cal_fat,
+            input_carb: testData[0].total_carb,
+        };
+
+        const pred = await nn.predict(testFood);
+        predictions.push({ x: calories, y: pred[0].output });
+    }
+
+    updateChart("Predictions", predictions);
+    console.log("Finished training!");
 }
 
 function saveModel() {
     nn.save();
 }
-
-document.getElementById("btn").addEventListener("click", makePrediction);
 
 document.getElementById("save").addEventListener("click", saveModel);
 

@@ -1,1 +1,1 @@
-{"inputUnits":[1],"outputUnits":1,"inputs":{"calories":{"dtype":"number","min":20,"max":2430}},"outputs":{"protein":{"dtype":"number","min":1,"max":186}},"isNormalized":true}
+{"inputUnits":[3],"outputUnits":1,"inputs":{"input_calories":{"dtype":"number","min":70,"max":2430},"input_fat":{"dtype":"number","min":18,"max":1270},"input_carb":{"dtype":"number","min":1,"max":156}},"outputs":{"output":{"dtype":"number","min":5,"max":186}},"isNormalized":true}
